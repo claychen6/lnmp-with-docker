@@ -1,0 +1,77 @@
+version: '2.0'
+services:
+  nginx:
+    image: hub.c.163.com/library/nginx
+    ports:
+      - 80:80
+    external_links:
+      - php-fpm
+    networks:
+      network:
+        ipv4_address: 172.20.0.2
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /root/work:/root/work:rw
+      - ./config/nginx/:/etc/nginx/:ro
+      - ./logs/www/:/data/wwwlogs/:rw
+    restart: always
+    command: nginx-debug -g 'daemon off;'
+
+  mysql:
+    image: hub.c.163.com/library/mysql:5.6
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/mysql:/etc/mysql:rw
+      - ./data/mysql:/var/lib/mysql:rw
+    networks:
+      network:
+        ipv4_address: 172.20.0.3
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_USER: claychen
+      MYSQL_PASSWORD: 123456
+    command: --explicit_defaults_for_timestamp
+
+  php-fpm:
+    build: ./dockerfiles/php-fpm/
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /root/work:/root/work:rw
+      - ./config/php-fpm/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./config/php-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf:ro
+      - ./logs/php-fpm:/data/php-fpm/log:rw
+    external_links:
+      - mysql
+      - mysql5.5
+      - redis
+      - nginx:api.qms.be.test.mi.com
+    networks:
+      network:
+        ipv4_address: 172.20.0.4
+    command: php-fpm -R
+
+  redis:
+    image: hub.c.163.com/library/redis
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      network:
+        ipv4_address: 172.20.0.5
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    command: redis-server
+
+networks:
+  network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      -
+        subnet: 172.20.0.0/24
