@@ -3,8 +3,5 @@ logs/
 data/
 
 config/nginx/vhost/*
-!config/nginx/vhost/default.conf
-!config/nginx/vhost/com.yaf.config
-!config/nginx/vhost/com.laravel.conf
 
 dockerfiles/php-fpm/xm_rpc\.tar

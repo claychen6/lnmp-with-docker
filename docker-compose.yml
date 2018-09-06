@@ -11,7 +11,7 @@ services:
         ipv4_address: 172.20.0.2
     volumes:
       - /private/var/db/timezone/tz/2018e.1.0/zoneinfo/Asia/Shanghai:/etc/localtime:ro
-      -  ~/Work:/root/work:rw
+      - ~/Work:/root/work:rw
       - ./config/nginx/:/etc/nginx/:ro
       - ./logs/www/:/data/wwwlogs/:rw
     restart: always
@@ -21,7 +21,7 @@ services:
     image: hub.c.163.com/library/mysql:5.6
     restart: always
     ports:
-      - 13306:3306
+      - 3306:3306
     volumes:
       - /private/var/db/timezone/tz/2018e.1.0/zoneinfo/Asia/Shanghai:/etc/localtime:ro
       - ./config/mysql:/etc/mysql:rw
